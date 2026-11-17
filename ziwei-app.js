@@ -34,7 +34,7 @@ function surrounded(chart,p){
   return [0,4,8,6].map(d=>chart.palaces.find(x=>x.earthlyBranch===BRANCHES[(i+d)%12])).filter(Boolean);
 }
 function selectedGroup(chart,p){return new Set(surrounded(chart,p).map(x=>indexOf(chart,x)));}
-let chart=null, fortune=null, selected=null, view='grid';
+let chart=null, fortune=null, selected=null, view='grid', assistantQuestion=null;
 function showError(message){$('error').textContent=message;$('error').hidden=false;}
 function setView(next){view=next;$('chartScroll').hidden=next!=='grid';$('palaceList').hidden=next!=='list';for(const [id,v] of [['viewGrid','grid'],['viewList','list']]){$(id).classList.toggle('active',v===next);$(id).setAttribute('aria-pressed',String(v===next));}}
 $('viewGrid').addEventListener('click',()=>setView('grid'));
@@ -126,6 +126,48 @@ function buildThemes(c){return [
   theme(c,'finance','財務傾向','管理資源時，較重效率還是保留彈性？','財帛','田宅','比較資源運用與長期安置；不是投資建議'),
   theme(c,'relationships','關係與相處','在親密關係裡，哪些需要說清楚？','夫妻','福德','比較互動期待與內在休息需求')
 ];}
+function assistantOptions(c){
+  const themes=buildThemes(c);
+  const soul=primary(c,'命'), body=c.palaces.find(p=>p.isBodyPalace);
+  const group=surrounded(c,soul);
+  return [
+    ...themes.map(t=>({code:t.code,label:t.question,title:t.title,
+      lines:[`主要傾向：${t.tendency}。`,`發揮情境：${t.scene}。`,`可能拉扯：${t.pull}`,`觀察範圍：${t.subject}。${t.transformation}`],
+      evidence:t.evidence})),
+    {code:'surround',label:'命宮的三方四正怎麼看？',title:'命宮的三方四正',
+      lines:[`命宮${palaceFacts(soul)}。`,group.length===4?`同盤的兩個三合宮是${palaceFacts(group[1])}、${palaceFacts(group[2])}；對宮是${palaceFacts(group[3])}。`:'目前無法完整定位三方四正，請以命盤所列宮位為準。','這些宮位提供對照線索，不等於事件會發生。'],
+      evidence:group.map(p=>({p,text:palaceFacts(p)}))},
+    {code:'body',label:'我的身宮在哪裡？',title:'身宮位置',
+      lines:body?[`身宮位於${nameOf(body)}（${body.heavenlyStem}${body.earthlyBranch}），本宮${mainNames(body).join('、')||'無主星'}。`,'身宮標記來自排盤結果；這裡只說明位置，不由此推斷人生結果。']:['這份排盤沒有標示身宮位置，無法由本頁判斷。'],
+      evidence:body?[{p:body,text:`身宮標記：${palaceFacts(body)}`}]:[]}
+  ];
+}
+function showAssistantAnswer(code){
+  const item=assistantOptions(chart).find(option=>option.code===code);
+  if(!item)return;
+  assistantQuestion=code;
+  for(const button of $('assistantQuestions').querySelectorAll('button[data-question]')){
+    const active=button.dataset.question===code;
+    button.classList.toggle('active',active);
+    button.setAttribute('aria-pressed',String(active));
+  }
+  $('assistantAnswer').innerHTML=`<h3>${escapeHTML(item.title)}</h3>${item.lines.map(line=>`<p>${escapeHTML(line)}</p>`).join('')}<div class="assistant-evidence"><strong>命盤依據 · 點選可查看宮位</strong><ul>${item.evidence.map(({p,text})=>`<li><button type="button" data-palace="${indexOf(chart,p)}">${escapeHTML(text)} ↗</button></li>`).join('')}</ul></div>`;
+}
+function renderAssistant(){
+  $('assistantQuestions').replaceChildren();
+  for(const item of assistantOptions(chart)){
+    const button=document.createElement('button');button.type='button';button.className='assistant-question';
+    button.dataset.question=item.code;button.textContent=item.label;
+    button.setAttribute('aria-pressed','false');
+    $('assistantQuestions').append(button);
+  }
+  assistantQuestion=null;
+  $('assistantAnswer').innerHTML='<p>請選擇上方的一個問題。</p>';
+}
+$('assistantQuestions').addEventListener('click',e=>{
+  const button=e.target.closest('button[data-question]');
+  if(button && chart)showAssistantAnswer(button.dataset.question);
+});
 function renderReadings(){
   const summaries=buildSummaries(chart);
   $('summaryList').replaceChildren();
@@ -141,7 +183,7 @@ function render(name){
   $('resultName').textContent=`${name}的命盤`;
   $('birthLine').textContent=`陽曆 ${chart.solarDate} · ${chart.time} ${chart.timeRange}　／　農曆 ${chart.lunarDate}`;
   $('identitySide').textContent=`命主 ${chart.soul} · 身主 ${chart.body}\n命宮 ${chart.earthlyBranchOfSoulPalace} · 身宮 ${chart.earthlyBranchOfBodyPalace}\n${chart.fiveElementsClass}`;
-  drawChart();renderReadings();
+  drawChart();renderReadings();renderAssistant();
   const d=fortune?.decadal,y=fortune?.yearly;
   $('flowContent').innerHTML=`<div class="flow-grid"><div><b>大限</b><br>${escapeHTML(d?.index>=0?nameOf(chart.palaces[d.index]):'資料不足')} · ${escapeHTML(d?.heavenlyStem||'')}${escapeHTML(d?.earthlyBranch||'')}<br>目前虛歲 ${escapeHTML(fortune?.age?.nominalAge??'—')}</div><div><b>流年</b><br>${escapeHTML(y?.index>=0?nameOf(chart.palaces[y.index]):'資料不足')} · ${escapeHTML(y?.heavenlyStem||'')}${escapeHTML(y?.earthlyBranch||'')}<br>${escapeHTML(fortune?.solarDate||'')}</div></div>`;
 }

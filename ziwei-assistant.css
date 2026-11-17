@@ -1,0 +1,12 @@
+.assistant-questions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:18px 0}
+.assistant-question{border:1px solid var(--line);background:#fff;color:var(--green);border-radius:8px;padding:12px 14px;text-align:left;font:inherit;font-weight:700;cursor:pointer}
+.assistant-question:hover{background:#f3f7f3}
+.assistant-question.active{background:var(--green);border-color:var(--green);color:#fff}
+.assistant-answer{background:#f7f8f4;border:1px solid var(--line);border-radius:10px;padding:18px;min-height:95px}
+.assistant-answer h3{color:var(--green);font-size:18px;margin:0 0 9px}
+.assistant-answer p{margin:8px 0}
+.assistant-evidence{border-top:1px solid var(--line);padding-top:12px;margin-top:14px;font-size:13px}
+.assistant-evidence ul{padding-left:20px;margin:7px 0 0}
+.assistant-evidence li{margin:6px 0}
+.assistant-evidence button{background:transparent;border:0;padding:2px 0;color:var(--green);text-decoration:underline;cursor:pointer;font:inherit;text-align:left;font-weight:700}
+@media(max-width:760px){.assistant-questions{grid-template-columns:1fr}}

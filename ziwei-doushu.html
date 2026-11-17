@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>紫微斗數・家人的命盤</title>
   <link rel="stylesheet" href="ziwei-style.css">
+  <link rel="stylesheet" href="ziwei-assistant.css">
   <script defer src="https://cdn.jsdelivr.net/npm/iztro@2.6.2/dist/iztro-v2.6.2.min.js"></script>
   <script defer src="ziwei-app.js"></script>
 </head>
@@ -40,6 +41,12 @@
         <p class="scope">這是依本命宮位主星、可見的生年四化及三方四正寫成的傳統象徵性觀察，不是對事件、年齡或人生結果的預測；沒有推論星曜未提供的資料。</p>
         <h3 class="subheading">三個值得留意的線索</h3><div id="summaryList" class="summary-list"></div>
         <h3 class="subheading">四個生活提問</h3><div id="themeGrid" class="theme-grid"></div>
+      </section>
+      <section class="panel assistant-panel" id="assistantSection" aria-labelledby="assistantTitle">
+        <div class="section-heading"><span class="num">04</span><h2 id="assistantTitle">命盤問答助手</h2><span class="hint">選一個問題，看命盤依據</span></div>
+        <p class="scope">這是依本頁已排出的宮位與星曜產生的固定問答，不是 AI 聊天，也不預測事件。點選問題後可從回答跳回原始宮位。</p>
+        <div id="assistantQuestions" class="assistant-questions" role="group" aria-label="選擇命盤問題"></div>
+        <article id="assistantAnswer" class="assistant-answer" aria-live="polite" aria-atomic="true"><p>請選擇上方的一個問題。</p></article>
       </section>
       <details class="panel flow-panel"><summary>查看當前大限與流年 <span>↘</span></summary><div id="flowContent"></div><p class="micro">運限為 iztro 對當前日期的計算；本頁不以此推測具體事件。</p></details>
       <p class="disclaimer">僅供傳統文化與自我探索參考，不宜據此作重大人生、醫療或財務決策。不同流派對四化與限運的解讀可能不同。</p>
