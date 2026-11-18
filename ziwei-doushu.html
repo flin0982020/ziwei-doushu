@@ -21,14 +21,17 @@
       <form id="chartForm">
         <label>姓名或暱稱<input id="name" placeholder="例如：小明" autocomplete="off" maxlength="30"></label>
         <label>出生日期（陽曆）<input id="solarDate" type="date" required></label>
-        <label>出生時辰<select id="timeIndex" required>
-          <option value="">請選擇時辰</option><option value="0">子時 23:00–01:00</option><option value="1">丑時 01:00–03:00</option><option value="2">寅時 03:00–05:00</option><option value="3">卯時 05:00–07:00</option><option value="4">辰時 07:00–09:00</option><option value="5">巳時 09:00–11:00</option><option value="6">午時 11:00–13:00</option><option value="7">未時 13:00–15:00</option><option value="8">申時 15:00–17:00</option><option value="9">酉時 17:00–19:00</option><option value="10">戌時 19:00–21:00</option><option value="11">亥時 21:00–23:00</option>
+        <label>出生地（選填，僅記錄）<input id="birthPlace" autocomplete="off" maxlength="80" placeholder="城市／地區；不自動換算真太陽時"></label>
+        <label>出生當地鐘錶時間（選填）<input id="birthClock" type="time" step="60"><small>填入後會依校正後的時間自動判斷時辰；未填則沿用下方手選時辰。</small></label>
+        <label class="dst-control"><input id="dstCorrection" type="checkbox">我已確認出生當時鐘錶時間有加快一小時（夏令時間）；排盤前扣回一小時（不自動驗證出生地規則）</label>
+        <label>出生時辰（未填精確時間時使用）<select id="timeIndex" required>
+          <option value="">請選擇時辰</option><option value="0">早子時 00:00–01:00</option><option value="1">丑時 01:00–03:00</option><option value="2">寅時 03:00–05:00</option><option value="3">卯時 05:00–07:00</option><option value="4">辰時 07:00–09:00</option><option value="5">巳時 09:00–11:00</option><option value="6">午時 11:00–13:00</option><option value="7">未時 13:00–15:00</option><option value="8">申時 15:00–17:00</option><option value="9">酉時 17:00–19:00</option><option value="10">戌時 19:00–21:00</option><option value="11">亥時 21:00–23:00</option><option value="12">晚子時 23:00–24:00</option>
         </select></label>
         <label>性別<select id="gender" required><option value="男">男</option><option value="女">女</option></select></label>
         <button type="submit" class="primary" id="submitBtn">展開命盤 <span aria-hidden="true">↗</span></button>
       </form>
       <p id="error" class="error" role="alert" hidden></p>
-      <p class="micro">排盤依據：陽曆生日、時辰與性別。若只有八字而沒有出生日期，請先確認陽曆日期及時辰。需要連網載入 iztro 排盤函式庫；載入後在本機計算。</p>
+      <p class="micro">排盤依據：陽曆生日、時辰與性別。出生地只作紀錄，並未自動判斷歷史夏令時間、時區或真太陽時；請依當地出生紀錄核對。若只有八字而沒有出生日期，請先確認陽曆日期及時辰。需要連網載入 iztro 排盤函式庫；載入後在本機計算。</p>
     </section>
     <div id="result" hidden>
       <section class="panel chart-panel" id="chartSection" aria-labelledby="chartTitle">
