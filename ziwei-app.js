@@ -67,9 +67,17 @@ function drawChart(){
   for(const [i,p] of chart.palaces.entries()){
     const pos=POSITIONS[p.earthlyBranch];if(!pos)throw Error('無法定位地支：'+p.earthlyBranch);
     const btn=document.createElement('button');btn.type='button';btn.className='palace-cell';btn.dataset.index=i;btn.style.gridRow=pos[0];btn.style.gridColumn=pos[1];btn.addEventListener('click',()=>selectPalace(i));
-    btn.innerHTML=`<span class="palace-stars"><span class="major-group">${starMarkup(majors(p),'major-star')||'<span class="empty-star">無主星</span>'}</span><span class="minor-group">${starMarkup(p.minorStars||[],'minor-star')}</span><span class="misc-group">${(p.adjectiveStars||[]).slice(0,5).map(s=>`<span>${escapeHTML(s.name)}</span>`).join('')}</span></span><span class="palace-footer"><span class="cell-branch">${escapeHTML(p.heavenlyStem+p.earthlyBranch)}</span><span class="palace-title"><span class="cell-name">${escapeHTML(p.name)}</span><span class="badges"></span></span><span class="palace-period">${escapeHTML(periodText(p))}</span></span>`;grid.append(btn);
+    btn.innerHTML=`<span class="palace-stars"><span class="major-group">${starMarkup(majors(p),'major-star')||'<span class="empty-star">無主星</span>'}</span><span class="minor-group">${starMarkup(p.minorStars||[],'minor-star')}</span><span class="misc-group">${(p.adjectiveStars||[]).map(s=>`<span>${escapeHTML(s.name)}</span>`).join('')}</span></span><span class="palace-footer"><span class="cell-branch">${escapeHTML(p.heavenlyStem+p.earthlyBranch)}</span><span class="palace-title"><span class="cell-name">${escapeHTML(p.name)}</span><span class="badges"></span></span><span class="palace-period">${escapeHTML(periodText(p))}</span></span>`;grid.append(btn);
   }
-  const center=document.createElement('div');center.className='chart-center';center.innerHTML=`<span>本命星盤 · 十二宮</span><strong>紫微斗數</strong><p>${escapeHTML(chart.chineseDate)}<br>${escapeHTML(chart.fiveElementsClass||'')}</p><p>命主 ${escapeHTML(chart.soul||'—')} · 身主 ${escapeHTML(chart.body||'—')}</p><p>命宮 ${escapeHTML(chart.earthlyBranchOfSoulPalace||'—')} · 身宮 ${escapeHTML(chart.earthlyBranchOfBodyPalace||'—')}</p><small>點選宮位查看三方四正與完整星曜</small>`;grid.append(center);
+  const center=document.createElement('div');center.className='chart-center';center.innerHTML=`<div class="center-heading"><span>本命星盤 · 十二宮</span><strong>紫微斗數</strong></div><div class="center-facts"><div><b>陽曆</b><span>${escapeHTML(chart.solarDate)} · ${escapeHTML(chart.time)} ${escapeHTML(chart.timeRange)}</span></div><div><b>農曆</b><span>${escapeHTML(chart.lunarDate)}</span></div><div><b>干支</b><span>${escapeHTML(chart.chineseDate)}</span></div><div><b>局數</b><span>${escapeHTML(chart.fiveElementsClass||'—')}</span></div><div><b>命主／身主</b><span>${escapeHTML(chart.soul||'—')}／${escapeHTML(chart.body||'—')}</span></div><div><b>命宮／身宮</b><span>${escapeHTML(chart.earthlyBranchOfSoulPalace||'—')}／${escapeHTML(chart.earthlyBranchOfBodyPalace||'—')}</span></div></div><small>點宮位可查看三方四正；命盤僅供文化參考。</small>`;grid.append(center);
+  const strip=$('decadalStrip');strip.replaceChildren();
+  const label=document.createElement('span');label.className='decadal-label';label.textContent='大限';strip.append(label);
+  const periods=chart.palaces.filter(p=>periodText(p)).sort((a,b)=>Number(a.decadal.range[0])-Number(b.decadal.range[0]));
+  for(const p of periods){
+    const button=document.createElement('button');button.type='button';button.className='decadal-item';
+    button.innerHTML=`<span>${escapeHTML(nameOf(p))}</span><span>${escapeHTML(periodText(p))}</span>`;
+    button.addEventListener('click',()=>selectPalace(indexOf(chart,p),false));strip.append(button);
+  }
   const list=$('palaceList');list.replaceChildren();
   for(const [i,p] of chart.palaces.entries()){
     const btn=document.createElement('button');btn.type='button';btn.className='palace-row';btn.dataset.index=i;btn.addEventListener('click',()=>selectPalace(i));
