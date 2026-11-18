@@ -6,9 +6,11 @@
   <title>紫微斗數・家人的命盤</title>
   <link rel="stylesheet" href="ziwei-style.css">
   <link rel="stylesheet" href="ziwei-traditional.css">
+  <link rel="stylesheet" href="ziwei-layers.css">
   <link rel="stylesheet" href="ziwei-assistant.css">
   <script defer src="https://cdn.jsdelivr.net/npm/iztro@2.6.2/dist/iztro-v2.6.2.min.js"></script>
   <script defer src="ziwei-app.js"></script>
+  <script defer src="ziwei-layers.js"></script>
   <script defer src="ziwei-chat.js"></script>
 </head>
 <body>
@@ -33,10 +35,13 @@
         <div class="section-heading"><span class="num">02</span><h2 id="chartTitle">本命星盤</h2><span class="hint">點宮位，讀三方四正</span></div>
         <div class="identity"><div><div class="eyebrow">NATAL CHART · 十二宮</div><h3 id="resultName"></h3><p id="birthLine"></p></div><div class="identity-side" id="identitySide"></div></div>
         <div class="view-tabs" role="group" aria-label="命盤檢視方式"><button type="button" id="viewGrid" class="tab active" aria-pressed="true">傳統全盤</button><button type="button" id="viewList" class="tab" aria-pressed="false">宮位列表</button></div>
+        <div class="layer-controls"><label for="layerDate">查看日期<input id="layerDate" type="date"></label><label for="layerScope">運限層級<select id="layerScope"><option value="natal">本命</option><option value="decadal">大限</option><option value="yearly">流年</option><option value="monthly">流月</option><option value="daily">流日</option></select></label><label class="fly-control"><input id="showFly" type="checkbox">顯示選取宮位的宮干飛化</label></div>
+        <p id="layerStatus" class="layer-status" role="status"></p>
         <div class="chart-scroll" id="chartScroll" role="region" aria-label="傳統十二宮命盤與大限索引，可水平捲動" tabindex="0"><div id="chartGrid" class="chart-grid" aria-label="十二宮四乘四命盤"></div><div id="decadalStrip" class="decadal-strip" aria-label="十二宮大限歲數索引"></div></div>
         <p id="chartScrollHint" class="chart-scroll-hint" hidden>手機上可左右滑動查看全盤；若要逐宮閱讀，請切換到「宮位列表」。</p>
         <div id="palaceList" class="palace-list" hidden></div>
         <p class="legend"><span class="dot soul"></span>命宮 <span class="dot body"></span>身宮 <span class="dot selected"></span>選取 <span class="dot related"></span>三方四正（兩個三合宮、對宮）</p>
+        <div id="flyList" class="fly-list" hidden></div>
         <article id="palaceDetail" class="palace-detail" aria-live="polite"></article>
       </section>
       <section class="panel reading-panel" aria-labelledby="readTitle">

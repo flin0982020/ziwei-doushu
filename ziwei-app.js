@@ -37,6 +37,7 @@ function selectedGroup(chart,p){return new Set(surrounded(chart,p).map(x=>indexO
 let chart=null, fortune=null, selected=null, view='grid', assistantQuestion=null;
 function showError(message){$('error').textContent=message;$('error').hidden=false;}
 function setView(next){view=next;$('chartScroll').hidden=next!=='grid';$('chartScrollHint').hidden=next!=='grid';$('palaceList').hidden=next!=='list';for(const [id,v] of [['viewGrid','grid'],['viewList','list']]){$(id).classList.toggle('active',v===next);$(id).setAttribute('aria-pressed',String(v===next));}}
+$('layerDate').value=$('solarDate').value;
 $('viewGrid').addEventListener('click',()=>setView('grid'));
 $('viewList').addEventListener('click',()=>setView('list'));
 $('chartForm').addEventListener('submit',e=>{
@@ -44,14 +45,18 @@ $('chartForm').addEventListener('submit',e=>{
   if(!window.iztro?.astro?.bySolar){showError('排盤函式庫未載入。請連上網路後重新整理，再試一次。');return;}
   const button=$('submitBtn');button.disabled=true;
   try{
-    // 保留原本的排盤呼叫、參數與語言；運限仍以當前日期計算。
+    // 保留原本的排盤呼叫、參數與語言；原有「當前運限」摘要仍取當前日期。
     chart=iztro.astro.bySolar($('solarDate').value,Number($('timeIndex').value),$('gender').value,true,'zh-TW');
     fortune=chart.horoscope(new Date());
     render($('name').value.trim()||'命主');
+    $('layerDate').min=chart.solarDate;
+    if($('layerDate').value<chart.solarDate)$('layerDate').value=chart.solarDate;
+    $('layerScope').value='natal';$('showFly').checked=false;
     $('chartForm').dispatchEvent(new Event('chart:rendered'));
     $('result').hidden=false;
     setView('grid');
     selectPalace(indexOf(chart,byName(chart,'命')),false);
+    if(window.ziweiLayers)window.ziweiLayers.refresh();
     $('chartSection').scrollIntoView({behavior:'smooth'});
   }catch(err){console.error(err);showError('排盤失敗，請確認日期與時辰；如持續發生，請檢查網路連線。');}
   finally{button.disabled=false;}
