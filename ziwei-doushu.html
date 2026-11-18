@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>紫微斗數・家人的命盤</title>
   <link rel="stylesheet" href="ziwei-style.css">
+  <link rel="stylesheet" href="ziwei-traditional.css">
   <link rel="stylesheet" href="ziwei-assistant.css">
   <script defer src="https://cdn.jsdelivr.net/npm/iztro@2.6.2/dist/iztro-v2.6.2.min.js"></script>
   <script defer src="ziwei-app.js"></script>
@@ -31,8 +32,9 @@
       <section class="panel chart-panel" id="chartSection" aria-labelledby="chartTitle">
         <div class="section-heading"><span class="num">02</span><h2 id="chartTitle">本命星盤</h2><span class="hint">點宮位，讀三方四正</span></div>
         <div class="identity"><div><div class="eyebrow">NATAL CHART · 十二宮</div><h3 id="resultName"></h3><p id="birthLine"></p></div><div class="identity-side" id="identitySide"></div></div>
-        <div class="view-tabs" role="group" aria-label="命盤檢視方式"><button type="button" id="viewGrid" class="tab active" aria-pressed="true">全盤縮覽</button><button type="button" id="viewList" class="tab" aria-pressed="false">宮位列表</button></div>
-        <div class="chart-scroll" id="chartScroll"><div id="chartGrid" class="chart-grid" aria-label="十二宮四乘四命盤"></div></div>
+        <div class="view-tabs" role="group" aria-label="命盤檢視方式"><button type="button" id="viewGrid" class="tab active" aria-pressed="true">傳統全盤</button><button type="button" id="viewList" class="tab" aria-pressed="false">宮位列表</button></div>
+        <div class="chart-scroll" id="chartScroll" role="region" aria-label="傳統十二宮命盤，可水平捲動" tabindex="0"><div id="chartGrid" class="chart-grid" aria-label="十二宮四乘四命盤"></div></div>
+        <p id="chartScrollHint" class="chart-scroll-hint" hidden>手機上可左右滑動查看全盤；若要逐宮閱讀，請切換到「宮位列表」。</p>
         <div id="palaceList" class="palace-list" hidden></div>
         <p class="legend"><span class="dot soul"></span>命宮 <span class="dot body"></span>身宮 <span class="dot selected"></span>選取 <span class="dot related"></span>三方四正（兩個三合宮、對宮）</p>
         <article id="palaceDetail" class="palace-detail" aria-live="polite"></article>
