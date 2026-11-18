@@ -48,6 +48,7 @@ $('chartForm').addEventListener('submit',e=>{
     chart=iztro.astro.bySolar($('solarDate').value,Number($('timeIndex').value),$('gender').value,true,'zh-TW');
     fortune=chart.horoscope(new Date());
     render($('name').value.trim()||'命主');
+    $('chartForm').dispatchEvent(new Event('chart:rendered'));
     $('result').hidden=false;
     setView(matchMedia('(max-width: 500px)').matches?'list':'grid');
     selectPalace(indexOf(chart,byName(chart,'命')),false);

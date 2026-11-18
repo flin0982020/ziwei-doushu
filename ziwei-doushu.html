@@ -8,12 +8,13 @@
   <link rel="stylesheet" href="ziwei-assistant.css">
   <script defer src="https://cdn.jsdelivr.net/npm/iztro@2.6.2/dist/iztro-v2.6.2.min.js"></script>
   <script defer src="ziwei-app.js"></script>
+  <script defer src="ziwei-chat.js"></script>
 </head>
 <body>
   <main class="app">
     <header class="masthead"><div class="eyebrow">A FAMILY ASTROLABE · 家人的星圖</div><h1>紫微斗數 <span>命盤手帖</span></h1><p>從十二宮的線索，讀一份屬於自己的觀察筆記。</p></header>
     <section class="panel input-panel" aria-labelledby="formTitle">
-      <div class="section-heading"><span class="num">01</span><h2 id="formTitle">輸入出生資料</h2><span class="hint">資料僅在此瀏覽器處理，不會儲存</span></div>
+        <div class="section-heading"><span class="num">01</span><h2 id="formTitle">輸入出生資料</h2><span class="hint">排盤在瀏覽器處理；AI 問答需另行同意傳送資料</span></div>
       <form id="chartForm">
         <label>姓名或暱稱<input id="name" placeholder="例如：小明" autocomplete="off" maxlength="30"></label>
         <label>出生日期（陽曆）<input id="solarDate" type="date" required></label>
@@ -47,6 +48,20 @@
         <p class="scope">這是依本頁已排出的宮位與星曜產生的固定問答，不是 AI 聊天，也不預測事件。點選問題後可從回答跳回原始宮位。</p>
         <div id="assistantQuestions" class="assistant-questions" role="group" aria-label="選擇命盤問題"></div>
         <article id="assistantAnswer" class="assistant-answer" aria-live="polite" aria-atomic="true"><p>請選擇上方的一個問題。</p></article>
+      </section>
+      <section class="panel ai-panel" id="aiSection" aria-labelledby="aiTitle" data-worker-url="https://ziwei-ai-chat.frank555076.workers.dev" data-turnstile-sitekey="0x4AAAAAAGGXKjj3lwR__aF6">
+        <div class="section-heading"><span class="num">05</span><h2 id="aiTitle">自由提問 AI</h2><span class="hint">選用功能 · 需連線</span></div>
+        <p class="scope">這是選用的線上 AI 功能。送出時，問題、最近一輪問答及十二宮的宮名／主星／本命四化／身宮標記會傳給 Cloudflare 處理；不自動傳送姓名、出生日期、時辰或原始命盤。但提問中自行填入的個資仍會傳送，命盤摘要也可能間接透露出生線索。AI 可能出錯，不能用來預測或替代重大決策。</p>
+        <p id="aiStatus" class="micro" role="status">尚未設定 AI 後端，固定問題仍可使用。</p>
+        <form id="aiForm" class="ai-form" hidden>
+          <label for="aiQuestion">你的問題（請勿輸入姓名、生日等個資）</label>
+          <textarea id="aiQuestion" maxlength="350" rows="3" required placeholder="例如：這張命盤中工作與關係的宮位可以怎麼對照？"></textarea>
+          <details class="ai-preview"><summary>查看本次將送出的命盤摘要</summary><pre id="aiPayloadPreview"></pre></details>
+          <label class="ai-consent"><input id="aiConsent" type="checkbox" required>我了解本次問題、近期對話及命盤摘要會送到 Cloudflare 供 AI 處理。</label>
+          <div id="aiTurnstile"></div>
+          <button id="aiSubmit" class="primary" type="submit">送出問題 <span aria-hidden="true">↗</span></button>
+        </form>
+        <div id="aiConversation" class="ai-conversation" aria-live="polite" aria-relevant="additions text"></div>
       </section>
       <details class="panel flow-panel"><summary>查看當前大限與流年 <span>↘</span></summary><div id="flowContent"></div><p class="micro">運限為 iztro 對當前日期的計算；本頁不以此推測具體事件。</p></details>
       <p class="disclaimer">僅供傳統文化與自我探索參考，不宜據此作重大人生、醫療或財務決策。不同流派對四化與限運的解讀可能不同。</p>
