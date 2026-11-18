@@ -35,7 +35,33 @@ function surrounded(chart,p){
 }
 function selectedGroup(chart,p){return new Set(surrounded(chart,p).map(x=>indexOf(chart,x)));}
 let chart=null, fortune=null, selected=null, view='grid', assistantQuestion=null;
+let birthInput=null;
+function resolveBirthInput(){
+  const date=$('solarDate').value,clock=$('birthClock').value,dst=$('dstCorrection').checked;
+  const place=$('birthPlace').value.trim();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date))throw Error('請填寫有效的陽曆出生日期。');
+  if(!clock){
+    if(dst)throw Error('要扣回夏令時間，請先填寫出生當地鐘錶時間。');
+    const index=Number($('timeIndex').value);
+    if(!Number.isInteger(index)||index<0||index>12)throw Error('請選擇出生時辰，或填寫精確的當地鐘錶時間。');
+    return {date,index,place,clock:'',dst:false,originalDate:date};
+  }
+  const match=/^(\d{2}):(\d{2})$/.exec(clock);
+  if(!match||Number(match[1])>23||Number(match[2])>59)throw Error('出生當地鐘錶時間格式不正確。');
+  const [year,month,day]=date.split('-').map(Number);
+  const local=new Date(Date.UTC(year,month-1,day,Number(match[1]),Number(match[2])));
+  if(local.getUTCFullYear()!==year||local.getUTCMonth()+1!==month||local.getUTCDate()!==day)throw Error('出生日期無效。');
+  // UTC 的日期方法只用於安全進位／退位；此處沒有把出生地當成 UTC 時區。
+  if(dst)local.setUTCMinutes(local.getUTCMinutes()-60);
+  const correctedDate=`${local.getUTCFullYear()}-${String(local.getUTCMonth()+1).padStart(2,'0')}-${String(local.getUTCDate()).padStart(2,'0')}`;
+  const correctedClock=`${String(local.getUTCHours()).padStart(2,'0')}:${String(local.getUTCMinutes()).padStart(2,'0')}`;
+  // iztro 區分早子時（0，00:00–01:00）及晚子時（12，23:00–24:00）。
+  const index=local.getUTCHours()===23?12:Math.floor((local.getUTCHours()+1)/2);
+  return {date:correctedDate,index,place,clock,dst,correctedClock,originalDate:date};
+}
 function showError(message){$('error').textContent=message;$('error').hidden=false;}
+$('birthClock').addEventListener('input',()=>{$('timeIndex').required=!$('birthClock').value;});
+$('birthClock').addEventListener('change',()=>{$('timeIndex').required=!$('birthClock').value;});
 function setView(next){view=next;$('chartScroll').hidden=next!=='grid';$('chartScrollHint').hidden=next!=='grid';$('palaceList').hidden=next!=='list';for(const [id,v] of [['viewGrid','grid'],['viewList','list']]){$(id).classList.toggle('active',v===next);$(id).setAttribute('aria-pressed',String(v===next));}}
 $('layerDate').value=$('solarDate').value;
 $('viewGrid').addEventListener('click',()=>setView('grid'));
@@ -46,9 +72,13 @@ $('chartForm').addEventListener('submit',e=>{
   const button=$('submitBtn');button.disabled=true;
   try{
     // 保留原本的排盤呼叫、參數與語言；原有「當前運限」摘要仍取當前日期。
-    chart=iztro.astro.bySolar($('solarDate').value,Number($('timeIndex').value),$('gender').value,true,'zh-TW');
+    birthInput=resolveBirthInput();
+    chart=iztro.astro.bySolar(birthInput.date,birthInput.index,$('gender').value,true,'zh-TW');
     fortune=chart.horoscope(new Date());
     render($('name').value.trim()||'命主');
+    const note=document.createElement('span');note.className='birth-correction';
+    note.textContent=birthInput.clock?`出生地：${birthInput.place||'未提供'}（僅記錄） · 出生紀錄：${birthInput.originalDate} ${birthInput.clock}（當地鐘錶時間） · ${birthInput.dst?'依本人確認夏令時間扣回一小時':'未套用夏令時間校正'} · 排盤採用：${birthInput.date} ${birthInput.correctedClock}，${birthInput.index===12?'晚子':'子丑寅卯辰巳午未申酉戌亥'[birthInput.index]}時。未做歷史時區或真太陽時校正。`:`出生地：${birthInput.place||'未提供'}（僅記錄） · 依手選時辰排盤；未做夏令時間、歷史時區或真太陽時校正。`;
+    $('birthLine').append(note);
     $('layerDate').min=chart.solarDate;
     if($('layerDate').value<chart.solarDate)$('layerDate').value=chart.solarDate;
     $('layerScope').value='natal';$('showFly').checked=false;
@@ -58,7 +88,7 @@ $('chartForm').addEventListener('submit',e=>{
     selectPalace(indexOf(chart,byName(chart,'命')),false);
     if(window.ziweiLayers)window.ziweiLayers.refresh();
     $('chartSection').scrollIntoView({behavior:'smooth'});
-  }catch(err){console.error(err);showError('排盤失敗，請確認日期與時辰；如持續發生，請檢查網路連線。');}
+  }catch(err){console.error(err);showError(err.message||'排盤失敗，請確認日期與時辰；如持續發生，請檢查網路連線。');}
   finally{button.disabled=false;}
 });
 function makeBadges(p,isSelected){return `${normalize(p.name)==='命'?'<span class="badge soul">命宮</span>':''}${p.isBodyPalace?'<span class="badge body">身宮</span>':''}${isSelected?'<span class="badge pick">選取</span>':''}`;}
